@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#F5F7F6">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<title>My AI Assistant</title>
+<style>
+:root{--bg:#F5F7F6;--panel:#E9EEEC;--ink:#14201F;--mut:#5F6F6C;--line:#D3DCD9;--acc:#F5A524;--bub:#DCE6E3}
+:root[data-theme=dark]{--bg:#0E1415;--panel:#141C1D;--ink:#E8EEEC;--mut:#8A9996;--line:#243131;--bub:#1D2A2B}
+*{box-sizing:border-box}
+body{margin:0;height:100dvh;overflow:hidden;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Devanagari",sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+[hidden]{display:none!important}
+.btn{background:var(--acc);color:#14201F;font-weight:600;border-radius:12px;padding:10px 16px}
+.ghost{border:1px solid var(--line);border-radius:12px;padding:8px 12px}
+.mut{color:var(--mut);font-size:14px}.err{color:#D2453D;min-height:1.4em;margin:0;font-size:14px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px}.logo svg{width:30px;height:30px;display:block}
+input:not([type=checkbox]),select,dialog textarea,.ed{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:11px 12px;width:100%}
+label{display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--mut);margin-bottom:10px}
+label.row{flex-direction:row;align-items:center}
+#auth{height:100dvh;display:grid;place-items:center;padding:16px;overflow:auto}
+.card{width:min(380px,100%);display:flex;flex-direction:column;gap:12px}
+.card .logo svg{width:48px;height:48px}
+#gbtn{display:flex;justify-content:center}
+.link{color:var(--mut);text-decoration:underline;padding:6px}
+#app{display:flex;height:100dvh}
+#side{width:280px;flex:none;background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;gap:10px;padding:14px 12px calc(14px + env(safe-area-inset-bottom));transition:transform .25s}
+#list{flex:1;overflow:auto;display:flex;flex-direction:column;gap:2px}
+.ci{display:flex;align-items:center;border-radius:10px;padding-left:12px}
+.ci:hover,.ci.on{background:var(--bub)}
+.ci span{flex:1;padding:9px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
+.ci button{color:var(--mut);padding:8px 12px}
+#me{display:flex;align-items:center;gap:10px;padding:8px;border-radius:12px;text-align:left;width:100%}
+#me:hover{background:var(--bub)}
+#av{width:34px;height:34px;border-radius:50%;background:var(--acc);color:#14201F;display:grid;place-items:center;font-weight:700}
+main{flex:1;min-width:0;display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:8px;padding:10px 14px;padding-top:calc(10px + env(safe-area-inset-top));border-bottom:1px solid var(--line)}
+#menu{display:none;font-size:22px;padding:2px 8px}
+#title{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#msgs{flex:1;overflow:auto;padding:8px 0 16px}
+.m{max-width:780px;margin:0 auto;padding:10px 16px}
+.u .b{margin-left:auto;width:fit-content;max-width:88%;background:var(--bub);border-radius:18px 18px 4px 18px;padding:9px 14px;white-space:pre-wrap;overflow-wrap:anywhere}
+.a .b:empty::after{content:"●";animation:p 1s infinite}
+@keyframes p{50%{opacity:.2}}
+@media(prefers-reduced-motion:reduce){.a .b:empty::after{animation:none}}
+.bar{display:flex;gap:2px;margin-top:4px}.u .bar{justify-content:flex-end}
+.bar button{font-size:13px;color:var(--mut);padding:4px 8px;border-radius:8px}.bar button:hover{background:var(--bub)}
+.md{overflow-wrap:anywhere}.md p{margin:.5em 0}.md table{border-collapse:collapse;display:block;overflow:auto}.md td,.md th{border:1px solid var(--line);padding:6px 10px}
+.md pre{background:#131A1B;color:#E8EEEC;border-radius:12px;overflow:hidden;margin:.8em 0}
+.md pre code{display:block;overflow:auto;padding:12px 14px;font:13px/1.5 ui-monospace,Menlo,Consolas,monospace}
+.md :not(pre)>code{background:var(--bub);padding:2px 6px;border-radius:6px;font-size:.9em}
+.ch{display:flex;justify-content:space-between;align-items:center;padding:2px 6px 2px 14px;background:#1E2A2B;font-size:12px;color:#9DB0AC}
+.ch button{color:#E8EEEC;font-size:12px;padding:6px 8px}
+.pic{max-width:min(320px,100%);border-radius:12px;display:block;margin:0 0 8px;cursor:zoom-in}
+.hero{text-align:center;margin:10vh auto 0;padding:0 16px}.hero svg{width:56px}.hero h1{font-size:26px;margin:12px 0 18px}
+.sugg{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}.sugg button{border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:14px}
+#composer{max-width:780px;width:100%;margin:0 auto;padding:6px 12px calc(10px + env(safe-area-inset-bottom))}
+#chips{display:flex;gap:6px;flex-wrap:wrap;padding:0 4px 6px}
+.chip{display:flex;gap:6px;align-items:center;background:var(--bub);border-radius:10px;padding:4px 4px 4px 8px;font-size:13px}.chip img{height:30px;border-radius:6px}.chip button{padding:4px 8px}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:6px 8px}
+.tools{display:flex;gap:2px}
+.ib{width:38px;height:38px;border-radius:50%;font-size:17px;flex:none}.ib:hover{background:var(--bub)}
+.ib.on{background:var(--acc)}
+.inp{display:flex;align-items:flex-end;gap:4px}
+.inp textarea{flex:1;border:0;outline:0;background:none;resize:none;max-height:160px;padding:8px 6px;line-height:1.4;color:var(--ink)}
+#send{background:var(--acc);color:#14201F;font-weight:700}
+dialog{border:1px solid var(--line);border-radius:18px;background:var(--bg);color:var(--ink);width:min(560px,94vw);max-height:88dvh;padding:18px}
+dialog::backdrop{background:#0009}
+dialog h2{margin:0 0 12px;font-size:20px}
+#pv{padding:8px;width:auto;max-width:94vw}#pv img{max-width:100%;max-height:75dvh;border-radius:12px;display:block}
+.ed{min-height:80px;width:min(70vw,540px);margin-bottom:6px;display:block}
+table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.stats div{background:var(--panel);border-radius:12px;padding:10px;display:flex;flex-direction:column}.stats b{font-size:20px}.stats span{font-size:12px;color:var(--mut)}
+#toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;z-index:60;font-size:14px;max-width:90vw}
+#scrim{display:none}
+@media(max-width:800px){
+ #side{position:fixed;inset:0 auto 0 0;z-index:20;transform:translateX(-100%);width:min(300px,85vw);padding-top:calc(14px + env(safe-area-inset-top))}
+ #side.open{transform:none}
+ #scrim.show{display:block;position:fixed;inset:0;background:#0007;z-index:10}
+ #menu{display:block}
+}
+</style>
+</head>
+<body>
+<div id="auth" hidden>
+ <form id="authForm" class="card">
+  <div class="brand"><span class="logo"></span>My AI Assistant</div>
+  <p class="mut">Ask, write, code, translate and learn in Hindi or English.</p>
+  <input id="name" placeholder="Your name" autocomplete="name" hidden>
+  <input id="email" type="email" placeholder="Email" autocomplete="email" required>
+  <input id="pass" type="password" placeholder="Password (8+ characters)" autocomplete="current-password" minlength="8" required>
+  <p id="err" class="err" role="alert"></p>
+  <button class="btn" id="authBtn"></button>
+  <div id="gbtn"></div>
+  <button type="button" id="swap" class="link"></button>
+ </form>
+</div>
+
+<div id="app" hidden>
+ <aside id="side">
+  <div class="brand"><span class="logo"></span>My AI Assistant</div>
+  <button class="btn" id="newBtn" data-i="newChat">New chat</button>
+  <div id="list"></div>
+  <button id="me"><span id="av"></span><span id="uname"></span></button>
+ </aside>
+ <div id="scrim"></div>
+ <main>
+  <header><button id="menu" aria-label="Menu">☰</button><span id="title"></span></header>
+  <div id="msgs" aria-live="polite"></div>
+  <form id="composer">
+   <div id="chips"></div>
+   <div class="box">
+    <div class="tools">
+     <button type="button" class="ib" id="fileBtn" aria-label="Attach file" title="Attach PDF or text file">📎</button>
+     <button type="button" class="ib" id="picBtn" aria-label="Attach image" title="Attach image">🖼</button>
+     <button type="button" class="ib" id="imgBtn" aria-label="Generate image" title="Generate an image">🎨</button>
+     <button type="button" class="ib" id="webBtn" aria-label="Web search" title="Search the web">🌐</button>
+    </div>
+    <div class="inp">
+     <textarea id="ta" rows="1"></textarea>
+     <button type="button" class="ib" id="mic" aria-label="Voice input">🎤</button>
+     <button class="ib" id="send" aria-label="Send">➤</button>
+    </div>
+   </div>
+  </form>
+ </main>
+</div>
+
+<input type="file" id="fileIn" accept=".pdf,.txt,.md,.csv,.json,.py,.js,.html,.css,.java,.c,.cpp" hidden>
+<input type="file" id="picIn" accept="image/*" hidden>
+
+<dialog id="set">
+ <h2 data-i="settings">Settings</h2>
+ <p id="mail" class="mut"></p>
+ <label>Name <input id="nmIn" maxlength="60"></label>
+ <label>Theme <select id="thSel"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></label>
+ <label>Language <select id="lgSel"><option value="en">English</option><option value="hi">हिन्दी</option></select></label>
+ <label class="row"><input type="checkbox" id="avCk"> Voice conversation: send speech automatically and read replies aloud</label>
+ <p class="mut">Privacy: your chats are visible only to your account and are sent to OpenAI to generate replies. Delete them any time.</p>
+ <div class="row">
+  <button class="ghost" id="clrAll">Clear all chats</button>
+  <button class="ghost" id="adminBtn" hidden>Admin panel</button>
+  <button class="ghost" id="logout">Log out</button>
+  <button class="btn" id="setClose">Done</button>
+ </div>
+</dialog>
+
+<dialog id="adm">
+ <div class="row" id="tabs"></div>
+ <div id="admBody"></div>
+ <p><button class="btn" id="admClose">Close</button></p>
+</dialog>
+
+<dialog id="pv"><img id="pvImg" alt="Generated or uploaded image"><div class="row"><button class="btn" id="pvSave">Save</button><button class="ghost" id="pvClose">Close</button></div></dialog>
+<div id="toast" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
